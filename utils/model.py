@@ -12,9 +12,9 @@ import config as c
 
 def get_combine_predictions(x, model_sale_flg, model_sale_amount):
 
-    predict = model_sale_flg.predict(x) * model_sale_amount.predict(x)
-    predict = predict > c.CALL_COST * 1.5
-    return predict
+    target = model_sale_flg.predict(x) * model_sale_amount.predict(x)
+    target = target > c.CALL_COST * 1.5
+    return target.astype('int')
 
 
 class Model:
