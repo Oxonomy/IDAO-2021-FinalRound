@@ -10,6 +10,7 @@ def main():
     df = get_dataset()
     x = df.drop(columns=['client_id']).to_numpy()
 
+
     model_sale_amount = Model.load('model_sale_amount')
     model_sale_flg = Model.load('model_sale_flg')
 
