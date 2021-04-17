@@ -3,7 +3,7 @@ from sklearn.metrics import mean_squared_error
 import config as c
 from utils.dataset import *
 from utils.metrics import NIC
-from utils.model import Model
+from utils.model import Model, get_combine_predictions
 
 
 def main():
@@ -27,10 +27,7 @@ def main():
     print(mean_squared_error(y, model_sale_flg.predict(x)))
 
     x = df.drop(columns=['client_id', 'sale_flg', 'sale_amount', 'contacts']).to_numpy()
-    y = df['sale_flg'].to_numpy().reshape(-1, 1)
-
-    predict = model_sale_flg.predict(x) * model_sale_amount.predict(x)
-    predict = predict > c.CALL_COST * 1.5
+    predict = get_combine_predictions(x, model_sale_flg, model_sale_amount)
     print('NIC:', NIC(predict, df['sale_amount'], df['contacts']))
 
 

@@ -10,6 +10,12 @@ from sklearn.model_selection import KFold
 import config as c
 
 
+def get_combine_predictions(x, model_sale_flg, model_sale_amount):
+
+    predict = model_sale_flg.predict(x) * model_sale_amount.predict(x)
+    predict = predict > c.CALL_COST * 1.5
+    return predict
+
 
 class Model:
     """Docs for """
