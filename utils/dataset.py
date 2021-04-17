@@ -24,10 +24,10 @@ def get_dataset() -> pd.DataFrame:
     df_deals = load_deals()
     df_dict_mcc = load_dict_mcc()
     df_payments = load_payments()
-    df_trxn = load_trxn()
+    #df_trxn = load_trxn()
 
     # Генерация фич
-    df_funnel = get_mean_month_costs(df_funnel, df_trxn)
+    #df_funnel = get_mean_month_costs(df_funnel, df_trxn)
     df_funnel = get_month_payments(df_funnel, df_payments)
 
     return df_funnel

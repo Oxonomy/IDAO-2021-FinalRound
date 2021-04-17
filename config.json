@@ -1,8 +1,4 @@
 {
     "dataset_dir": "C:\\Users\\Kirill\\Documents\\DataSets\\idao_2021_train",
-    "test_path": "",
-    "train_path": "",
-    "submission_csv": "",
-    "test_size": null,
-    "batch_size": null
+    "model_dir": "model"
 }
