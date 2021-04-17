@@ -27,9 +27,10 @@ def get_dataset() -> pd.DataFrame:
     df_trxn = load_trxn()
 
     # Генерация фич
+    df_funnel = get_funnel_features(df_funnel)
+    df_funnel = get_client_features(df_funnel, df_client)
     df_funnel = get_mean_month_costs(df_funnel, df_trxn)
     df_funnel = get_month_payments(df_funnel, df_payments)
-
     return df_funnel
 
 
