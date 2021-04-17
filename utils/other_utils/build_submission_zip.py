@@ -16,9 +16,10 @@ def get_all_file_paths(directory):
 def main():
     file_paths = []
     file_paths += get_all_file_paths('utils')
-    file_paths += get_all_file_paths('preprocessing')
-    file_paths += get_all_file_paths('pickle_data')
-    file_paths += ['Makefile', 'main.sh', 'train.py', 'LinearRegressionModel.py', 'config.json', 'config.py', 'test.sh', 'test.py']
+    file_paths += get_all_file_paths('model')
+    file_paths += get_all_file_paths('debugg_data')
+    file_paths += ['Makefile', 'run.sh', 'train.sh', 'archive_name', 'config.submission.json', 'config.py',
+                   'train.py', 'generate_submission.py', 'debugging.py', 'debugging.sh']
 
     for file_name in file_paths:
         print(file_name)

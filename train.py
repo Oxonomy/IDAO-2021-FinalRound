@@ -1,10 +1,10 @@
 from sklearn.metrics import mean_squared_error
-
+import logging
 import config as c
 from utils.dataset import *
 from utils.metrics import NIC
 from utils.model import Model, get_combine_predictions
-
+logging.basicConfig(format='%(asctime)s %(message)s', filename='training.log', level=logging.DEBUG)
 
 def main():
     df = get_dataset()
@@ -30,8 +30,10 @@ def main():
     target = get_combine_predictions(x, model_sale_flg, model_sale_amount)
     print('NIC:', NIC(target, df['sale_amount'], df['contacts']))
 
-    df['target'] = target
-    df[['client_id', 'target']].to_csv('submission.csv', index=False)
+    #df['target'] = target
+    #df[['client_id', 'target']].to_csv('submission.csv', index=False)
+
+    logging.info("model was trained")
 
 
 if __name__ == '__main__':

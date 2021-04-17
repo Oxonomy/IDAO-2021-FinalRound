@@ -22,7 +22,7 @@ def get_dataset() -> pd.DataFrame:
     df_client = load_client()
     df_com = load_com()
     df_deals = load_deals()
-    df_dict_mcc = load_dict_mcc()
+    #df_dict_mcc = load_dict_mcc()
     df_payments = load_payments()
     #df_trxn = load_trxn()
 
