@@ -60,7 +60,7 @@ def pipeline(df, mcc):
     client_info['activity_window'] = client_info['last_active_month'] - client_info['first_active_month']
 
     # TIME SERIES features of monthly actions. VERY SLOW!
-    feature_action_seq_by_label(client_info, df, 'mcc_cd')
+    #feature_action_seq_by_label(client_info, df, 'mcc_cd')
 
     # TIME SERIES features of spends
     mcc_labels_mean = ('General consumption_Food', 'Restaurants_Fast food',
@@ -117,9 +117,9 @@ def preprocess_trxn(df, mcc):
     df['txn_city'] = df['txn_city'].apply(lambda s: s[:-3] if s.endswith(' G.') else s)
     df['txn_city'] = df['txn_city'].apply(lambda s: s[:-2] if s.endswith('G.') else s)
 
-    df['tran_year'] = df['tran_time'].str[:4]
-    df['tran_month'] = df['tran_time'].str[5:7].astype(int)
-    df['tran_day'] = df['tran_time'].str[8:10].astype(int)
+    df['tran_year'] = df['tran_time'].dt.year
+    df['tran_month'] = df['tran_time'].dt.month
+    df['tran_day'] = df['tran_time'].dt.day
 
     mcc = mcc.set_index('mcc_cd')
     mcc['group'] = mcc['brs_mcc_group'] + '_' + mcc['brs_mcc_subgroup']

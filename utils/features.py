@@ -31,6 +31,7 @@ def get_funnel_features(funel) -> pd.DataFrame:
     funel['region_cd'] = funel['region_cd'].astype(int)
 
     funel['feature_7'] = funel['feature_7'].fillna(3642369.0)
+    funel['feature_10div7'] = funel.feature_10 / funel.feature_7
     funel['feature_7'] = np.sqrt(funel['feature_7'])
 
     funel['feature_8'] = funel['feature_8'].fillna(3314257.0)
@@ -57,6 +58,15 @@ def get_client_features(funel, client) -> pd.DataFrame:
     client['job_type'] = client['job_type'].fillna("USELESS_JOB").map(lambda x: int(hashlib.sha1(x.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
     funel = funel.merge(client, on='client_id', how='left')
     return funel
+
+
+def get_comm_features(df_funnel, df_com) -> pd.DataFrame:
+    ring_up_flg_sum = df_com.groupby('client_id')[['ring_up_flg']].sum()
+    ring_up_flg_sum = ring_up_flg_sum.rename(columns={'ring_up_flg': 'ring_up_flg_sum'})
+    df_funnel = pd.concat([df_funnel.set_index('client_id'), ring_up_flg_sum], axis=1).reset_index()
+
+
+    return df_funnel
 
 
 def get_pensioner(df_funnel, df_payments):

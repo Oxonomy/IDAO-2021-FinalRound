@@ -15,6 +15,7 @@ def get_all_file_paths(directory):
 
 def main():
     file_paths = []
+    file_paths += get_all_file_paths('mcc')
     file_paths += get_all_file_paths('utils')
     file_paths += get_all_file_paths('model')
     file_paths += get_all_file_paths('debugg_data')

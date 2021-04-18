@@ -127,7 +127,7 @@ def load_dict_mcc():
         brs_mcc_group: MCC group.
         brs_mcc_subgroup: Подгруппа MCC.
     """
-    path = os.path.join(c.DATASET_DIR, 'dict_mcc.csv')
+    path = os.path.join('mcc/dict_mcc.csv')
     df = pd.read_csv(path)
     df = dict_mcc_preprocessing(df)
     return df

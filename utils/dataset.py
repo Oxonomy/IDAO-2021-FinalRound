@@ -8,7 +8,8 @@ from utils.load_data import *
 from utils.data_processing import *
 
 
-def get_dataset(is_return_all_table=False) -> pd.DataFrame:
+
+def get_dataset(is_return_all_table=False, do_features=True) -> pd.DataFrame:
     """
     Загружает все таблицы и генерирует из них фичи
     :return: итоговая таблица
@@ -26,16 +27,20 @@ def get_dataset(is_return_all_table=False) -> pd.DataFrame:
     df_trxn = load_trxn()
 
     # Генерация фич
-    # df_funnel = get_mean_month_costs(df_funnel, df_trxn)
-    df_funnel = get_month_payments(df_funnel, df_payments)
-    df_funnel = get_funnel_features(df_funnel)
-    df_funnel = get_client_features(df_funnel, df_client)
-    df_funnel = get_transactions_features(df_funnel, df_trxn, df_dict_mcc)
+    if do_features:
+        df_funnel = get_month_payments(df_funnel, df_payments)
+        df_funnel = get_funnel_features(df_funnel)
+        df_funnel = get_client_features(df_funnel, df_client)
+        df_funnel = get_transactions_features(df_funnel, df_trxn, df_dict_mcc)
+        df_funnel = get_comm_features(df_funnel, df_com)
+        df_funnel = get_pensioner(df_funnel, df_payments)
+        df_funnel = string_columns_to_int(df_funnel)
 
     if not is_return_all_table:
         return df_funnel
     else:
         return df_funnel, df_appl, df_aum, df_balance, df_client, df_com, df_deals, df_payments
+
 
 
 if __name__ == '__main__':

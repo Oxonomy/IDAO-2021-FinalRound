@@ -1,3 +1,4 @@
+import hashlib
 import os
 import fnmatch
 import numpy as np
@@ -34,7 +35,6 @@ def balance_preprocessing(df: pd.DataFrame):
 
 
 def client_preprocessing(df: pd.DataFrame):
-
     return df
 
 
@@ -59,4 +59,12 @@ def payments_preprocessing(df: pd.DataFrame):
 
 def trxn_preprocessing(df: pd.DataFrame):
     df = sort_data_by_datetime(df, 'tran_time')
+    return df
+
+
+def string_columns_to_int(df: pd.DataFrame):
+    categorical_columns = [c for c in df.columns if df[c].dtype.name == 'object']
+    print(categorical_columns)
+    for column in categorical_columns:
+        df[column] = df[column].map(lambda x: int(hashlib.sha1(str(x).encode("utf-8")).hexdigest(), 16) % (10 ** 8))
     return df
