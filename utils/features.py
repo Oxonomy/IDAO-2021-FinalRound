@@ -199,6 +199,7 @@ def get_trxn_features(df_funnel, df_trxn):
     df_funnel = pd.concat([df_funnel.set_index('client_id'), mean_hour_trxn], axis=1).reset_index()
 
     # Среднее арифметическое покупок за день
+    df_trxn['date'] = df_trxn.tran_time.dt.date
     average_purchases_per_day = df_trxn[['client_id', 'date']].groupby('client_id').count() / df_trxn[['client_id', 'date']].groupby('client_id').nunique()
     df_funnel = pd.concat([df_funnel.set_index('client_id'), average_purchases_per_day], axis=1).reset_index()
 
