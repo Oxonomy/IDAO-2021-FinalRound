@@ -17,6 +17,12 @@ def main():
     model_sale_amount.save()
     print(mean_squared_error(y, model_sale_amount.predict(x)))
 
+    y = df[df['sale_amount'].fillna(0) > 0]['contacts'].to_numpy().reshape(-1, 1)
+    model_calls_amount = Model('model_calls_amount', k_fold_n_splits=5)
+    model_calls_amount.fit(x, y)
+    model_calls_amount.save()
+    print(mean_squared_error(y, model_calls_amount.predict(x)))
+
     x = df.drop(columns=['client_id', 'sale_flg', 'sale_amount', 'contacts']).to_numpy()
     y = df['sale_flg'].to_numpy().reshape(-1, 1)
 
@@ -27,7 +33,7 @@ def main():
 
     x = df.drop(columns=['client_id', 'sale_flg', 'sale_amount', 'contacts']).to_numpy()
 
-    target = get_combine_predictions(x, model_sale_flg, model_sale_amount)
+    target = get_combine_predictions(x, model_sale_flg, model_sale_amount, model_calls_amount)
     print('NIC:', NIC(target, df['sale_amount'], df['contacts']))
 
     df['target'] = target
