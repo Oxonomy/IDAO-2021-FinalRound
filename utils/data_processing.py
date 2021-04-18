@@ -30,6 +30,7 @@ def aum_preprocessing(df: pd.DataFrame):
 
 
 def balance_preprocessing(df: pd.DataFrame):
+    df = df.drop_duplicates()
     df = sort_data_by_datetime(df, 'month_end_dt')
     return df
 

@@ -32,6 +32,7 @@ def get_dataset(is_return_all_table=False, do_features=True) -> pd.DataFrame:
         df_funnel = get_funnel_features(df_funnel)
         df_funnel = get_aum_features(df_funnel, df_aum)
         df_funnel = get_appl_features(df_funnel, df_appl)
+        df_funnel = get_balance_features(df_funnel, df_balance)
         df_funnel = get_client_features(df_funnel, df_client)
         # df_funnel = get_transactions_features(df_funnel, df_trxn, df_dict_mcc)
         df_funnel = get_comm_features(df_funnel, df_com)
