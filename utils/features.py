@@ -43,6 +43,7 @@ def get_funnel_features(funel) -> pd.DataFrame:
     funel['freq_feature_1_client_segment'] = funel.groupby('feature_1_client_segment')['feature_1_client_segment'].transform('count')
     return funel
 
+
 def get_aum_features(funnel, aum):
     funnel = funnel.set_index('client_id')
     gb = aum.groupby('client_id')['balance_rur_amt']
@@ -55,6 +56,7 @@ def get_aum_features(funnel, aum):
     funnel.loc[std_balance.index, 'std_balance'] = std_balance
 
     return funnel.reset_index()
+
 
 def get_appl_features(funnel, appl):
     funnel = funnel.set_index('client_id')
@@ -95,9 +97,9 @@ def get_balance_features(funnel, balance):
 
     feature = 'prod_group_name'
     feature_values = ['Salary cards', 'Cash on demand', 'Debit cards', 'PILS',
-                       'Time deposits', 'Credit card other', 'Open_card credit card',
-                       'Mortgage', 'Technical cards', 'POS', 'Credit card 120 days',
-                       'Car loans', 'Prepaid cards']
+                      'Time deposits', 'Credit card other', 'Open_card credit card',
+                      'Mortgage', 'Technical cards', 'POS', 'Credit card 120 days',
+                      'Car loans', 'Prepaid cards']
     features_df = create_cat_feature_rates(balance, feature, feature_values)
     funnel.loc[features_df.index, features_df.columns] = features_df
 
@@ -124,7 +126,7 @@ def create_cat_feature_rates(balance, feature, feature_values):
 
     rates = vc.groupby('client_id').apply(construct_feature_vector)
     rates = pd.DataFrame(np.stack(rates.values), index=rates.index,
-                 columns=[f'rate_value{i}_{feature}' for i in range(len(feature2idx)+1)])
+                         columns=[f'rate_value{i}_{feature}' for i in range(len(feature2idx) + 1)])
 
     features_df = pd.concat([rates, top1_feature, top1_count, top1_rate], axis=1)
     return features_df
@@ -202,7 +204,6 @@ def get_trxn_features(df_funnel, df_trxn):
     df_trxn['date'] = df_trxn.tran_time.dt.date
     average_purchases_per_day = df_trxn[['client_id', 'date']].groupby('client_id').count() / df_trxn[['client_id', 'date']].groupby('client_id').nunique()
     df_funnel = pd.concat([df_funnel.set_index('client_id'), average_purchases_per_day], axis=1).reset_index()
-
 
     # За сколлько дней до конца общего периода была последняя трата
     last_transaction = df_trxn.groupby('client_id')[['tran_time']].max()
