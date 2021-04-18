@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import os
 import numpy as np
@@ -42,6 +43,7 @@ def get_funnel_features(funel) -> pd.DataFrame:
     funel['freq_feature_1_client_segment'] = funel.groupby('feature_1_client_segment')['feature_1_client_segment'].transform('count')
     return funel
 
+
 def get_aum_features(funnel, aum):
     funnel = funnel.set_index('client_id')
     gb = aum.groupby('client_id')['balance_rur_amt']
@@ -68,9 +70,16 @@ def get_client_features(funel, client) -> pd.DataFrame:
 
 
 def get_comm_features(df_funnel, df_com) -> pd.DataFrame:
-    ring_up_flg_sum = df_com.groupby('client_id')[['ring_up_flg']].sum()
-    ring_up_flg_sum = ring_up_flg_sum.rename(columns={'ring_up_flg': 'ring_up_flg_sum'})
-    df_funnel = pd.concat([df_funnel.set_index('client_id'), ring_up_flg_sum], axis=1).reset_index()
+    coms = df_com[df_com['channel'] == 'CALL'].groupby('client_id').sum()[['agr_flg', 'otkaz', 'dumaet', 'ring_up_flg', 'not_ring_up_flg', 'count_comm']]
+    df_funnel = pd.concat([df_funnel.set_index('client_id'), coms], axis=1).reset_index()
+
+    # За сколько дней до конца общего периода был последний звонок
+    last_coll = df_com.groupby('client_id')[['month_end_dt']].max()
+    last_coll = last_coll.rename(columns={'month_end_dt': 'last_coll'})
+    df_funnel = pd.concat([df_funnel.set_index('client_id'), last_coll], axis=1).reset_index()
+    df_funnel.last_coll = df_funnel.last_coll.fillna(datetime.datetime.combine(datetime.date(2018, 1, 1), datetime.time(0, 0)))
+    df_funnel['last_coll_days_delta'] = df_funnel.last_coll.map(lambda x: (datetime.datetime.combine(datetime.date(2020, 1, 1), datetime.time(0, 0)) - x).days)
+    df_funnel = df_funnel.drop(columns=['last_coll'])
 
     return df_funnel
 
@@ -90,6 +99,18 @@ def get_transactions_features(df_funnel, df_trxn, df_dict_mcc):
     client_info = pipeline(df_trxn, df_dict_mcc)
     client_info = client_info.reset_index().rename({'index': 'client_id'}, axis=1)
     df_funnel = pd.merge(df_funnel, client_info, on='client_id', how='left')
+
+    return df_funnel
+
+
+def get_trxn_features(df_funnel, df_trxn):
+    # За сколлько дней до конца общего периода была последняя трата
+    last_transaction = df_trxn.groupby('client_id')[['tran_time']].max()
+    last_transaction = last_transaction.rename(columns={'tran_time': 'last_transaction'})
+    df_funnel = pd.concat([df_funnel.set_index('client_id'), last_transaction], axis=1).reset_index()
+    df_funnel.last_transaction = df_funnel.last_transaction.fillna(datetime.datetime.combine(datetime.date(2019, 1, 1), datetime.time(0, 0)))
+    df_funnel['last_transaction_days_delta'] = df_funnel.last_transaction.map(lambda x: (datetime.datetime.combine(datetime.date(2020, 1, 1), datetime.time(0, 0)) - x).days)
+    df_funnel = df_funnel.drop(columns=['last_transaction'])
 
     return df_funnel
 
