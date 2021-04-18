@@ -69,7 +69,7 @@ def trxn_preprocessing(df: pd.DataFrame):
     df['txn_city'] = df['txn_city'].fillna('unknown')
     df.txn_city = df.txn_city.astype("category")
     df.txn_country = df.txn_country.astype("category")
-    df.txn_comment_1 = df.txn_comment_1.astype("category")
+    #df.txn_comment_1 = df.txn_comment_1.astype("category")
 
     #df.tran_amt_rur = df.tran_amt_rur.astype('float16')
 
