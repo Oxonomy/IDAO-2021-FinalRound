@@ -55,6 +55,32 @@ def get_aum_features(funnel, aum):
 
     return funnel.reset_index()
 
+def get_appl_features(funnel, appl):
+    funnel = funnel.set_index('client_id')
+
+    total_count = appl.groupby('client_id')['appl_prod_type_name'].count()
+    funnel['appl_total_count'] = 0
+    funnel.loc[total_count.index, 'appl_total_count'] = total_count
+
+    for feature in ('appl_prod_group_name', 'appl_stts_name_dc', 'appl_sale_channel_name'):
+        count_helper = appl.groupby('client_id')[feature].value_counts().rename('count').reset_index()
+        top = count_helper.groupby('client_id').head(1).set_index('client_id')
+
+        top_value = top[feature]
+        funnel[f'top_value_{feature}'] = 0
+        funnel.loc[top_value.index, f'top_value_{feature}'] = top_value
+
+        top_rate = top['count'] / count_helper.groupby('client_id').sum()['count']
+        funnel[f'top_rate_{feature}'] = 0
+        funnel.loc[top_rate.index, f'top_rate_{feature}'] = top_rate
+
+    appl['month_end'] = appl['month_end_dt'].str[5:7].astype(int).apply(lambda m: m if m < 9 else m - 12)
+    last_month = appl.groupby('client_id')['month_end'].max()
+    funnel['appl_last_month'] = 0
+    funnel.loc[last_month.index, 'appl_last_month'] = last_month
+
+    return funnel.reset_index()
+
 
 def get_client_features(funel, client) -> pd.DataFrame:
     client['gender'] = client['gender'].fillna('UNK')

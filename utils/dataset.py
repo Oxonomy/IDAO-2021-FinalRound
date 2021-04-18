@@ -24,14 +24,16 @@ def get_dataset(is_return_all_table=False, do_features=True) -> pd.DataFrame:
     df_deals = load_deals()
     df_dict_mcc = load_dict_mcc()
     df_payments = load_payments()
-    #df_trxn = load_trxn()
+    # df_trxn = load_trxn()
 
     # Генерация фич
     if do_features:
         df_funnel = get_month_payments(df_funnel, df_payments)
         df_funnel = get_funnel_features(df_funnel)
+        df_funnel = get_aum_features(df_funnel, df_aum)
+        df_funnel = get_appl_features(df_funnel, df_appl)
         df_funnel = get_client_features(df_funnel, df_client)
-        #df_funnel = get_transactions_features(df_funnel, df_trxn, df_dict_mcc)
+        # df_funnel = get_transactions_features(df_funnel, df_trxn, df_dict_mcc)
         df_funnel = get_comm_features(df_funnel, df_com)
         df_funnel = get_pensioner(df_funnel, df_payments)
         df_funnel = string_columns_to_int(df_funnel)
