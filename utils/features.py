@@ -5,6 +5,7 @@ import pandas as pd
 
 import config as c
 from utils.data_processing import *
+from .features_transactions import pipeline
 
 
 def get_mean_month_costs(df_funnel, df_trxn) -> pd.DataFrame:
@@ -67,4 +68,14 @@ def get_pensioner(df_funnel, df_payments):
 
     df_funnel = pd.concat([df_funnel.set_index('client_id'), df_payments], axis=1).reset_index()
     return df_funnel
+
+
+def get_transactions_features(df_funnel, df_trxn, df_dict_mcc):
+    client_info = pipeline(df_trxn, df_dict_mcc)
+    client_info = client_info.reset_index().rename({'index': 'client_id'}, axis=1)
+    df_funnel = pd.merge(df_funnel, client_info, on='client_id', how='left')
+
+    return df_funnel
+
+
 
