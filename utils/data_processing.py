@@ -30,6 +30,7 @@ def aum_preprocessing(df: pd.DataFrame):
 
 
 def balance_preprocessing(df: pd.DataFrame):
+    df = df.drop_duplicates()
     df.prod_cat_name = df.prod_cat_name.fillna('unknown')
     df.prod_group_name = df.prod_group_name.fillna('unknown')
 

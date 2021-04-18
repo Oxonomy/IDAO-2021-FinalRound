@@ -43,7 +43,6 @@ def get_funnel_features(funel) -> pd.DataFrame:
     funel['freq_feature_1_client_segment'] = funel.groupby('feature_1_client_segment')['feature_1_client_segment'].transform('count')
     return funel
 
-
 def get_aum_features(funnel, aum):
     funnel = funnel.set_index('client_id')
     gb = aum.groupby('client_id')['balance_rur_amt']
@@ -82,6 +81,53 @@ def get_appl_features(funnel, appl):
     funnel.loc[last_month.index, 'appl_last_month'] = last_month
 
     return funnel.reset_index()
+
+
+def get_balance_features(funnel, balance):
+    funnel = funnel.set_index('client_id')
+
+    feature = 'prod_cat_name'
+    feature_values = ['KN', 'CURRENT ACCOUNTS', 'SALARY CARDS', 'DEPOSITS', 'DEBIT CARDS',
+                      'CREDIT CARDS', 'MORTGAGE', 'TECHNICAL CARDS', 'CAR LOANS',
+                      'CREDITS IN CASH OR', 'Cash on demand', 'CASH CREDITS (X-SALE)']
+    features_df = create_cat_feature_rates(balance, feature, feature_values)
+    funnel.loc[features_df.index, features_df.columns] = features_df
+
+    feature = 'prod_group_name'
+    feature_values = ['Salary cards', 'Cash on demand', 'Debit cards', 'PILS',
+                       'Time deposits', 'Credit card other', 'Open_card credit card',
+                       'Mortgage', 'Technical cards', 'POS', 'Credit card 120 days',
+                       'Car loans', 'Prepaid cards']
+    features_df = create_cat_feature_rates(balance, feature, feature_values)
+    funnel.loc[features_df.index, features_df.columns] = features_df
+
+    return funnel.reset_index()
+
+
+def create_cat_feature_rates(balance, feature, feature_values):
+    feature2idx = dict(zip(feature_values, range(len(feature_values))))
+
+    gb = balance.groupby('client_id')[feature]
+    vc = gb.value_counts().rename('count').reset_index()
+    vc['rates'] = vc['count'] / vc.groupby('client_id')['count'].transform('sum')
+
+    top1_vc = vc.groupby('client_id').head(1).set_index('client_id')
+    top1_feature = top1_vc[feature].rename(f'top_feature_{feature}')
+    top1_count = top1_vc['count'].rename(f'top_count_{feature}')
+    top1_rate = top1_vc['rates'].rename(f'top_rate_{feature}')
+
+    def construct_feature_vector(sub_df):
+        vector = np.zeros(len(feature_values) + 1)
+        idxs = sub_df[feature].map(lambda v: feature2idx[v] if v in feature2idx else -1).values
+        vector[idxs] = sub_df['rates']
+        return vector
+
+    rates = vc.groupby('client_id').apply(construct_feature_vector)
+    rates = pd.DataFrame(np.stack(rates.values), index=rates.index,
+                 columns=[f'rate_value{i}_{feature}' for i in range(len(feature2idx)+1)])
+
+    features_df = pd.concat([rates, top1_feature, top1_count, top1_rate], axis=1)
+    return features_df
 
 
 def get_client_features(funel, client) -> pd.DataFrame:
