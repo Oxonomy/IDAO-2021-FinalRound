@@ -5,9 +5,6 @@ import config as c
 from utils.du import sleep
 
 print('!')
-c.DATASET_DIR = 'debugg_data'
-print(datetime.datetime.now())
-sleep(10)
-print(datetime.datetime.now())
+#c.DATASET_DIR = 'debugg_data'
 #main()
 print('!')
