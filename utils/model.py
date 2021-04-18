@@ -10,9 +10,9 @@ from sklearn.model_selection import KFold, train_test_split
 import config as c
 
 
-def get_combine_predictions(x, model_sale_flg, model_sale_amount):
+def get_combine_predictions(x, model_sale_flg, model_sale_amount, model_calls_amount):
     target = model_sale_flg.predict(x) * model_sale_amount.predict(x)
-    target = target > c.CALL_COST * 1.5
+    target = target > c.CALL_COST * model_calls_amount.predict(x)
     return target.astype('int')
 
 
@@ -54,8 +54,6 @@ class Model:
 
 
 class ModelClassifier(Model):
-    BINARIZATION_THRESHOLD = 0.17
-
     @staticmethod
     def get_catboost_model():
         model = CatBoostClassifier(
@@ -78,5 +76,4 @@ class ModelClassifier(Model):
             predict.append(self.catboost_regressor_models[i].predict_proba(X)[:, 1])
 
         proba = np.mean(predict, axis=0)
-        preds = (proba > self.BINARIZATION_THRESHOLD).astype(int)
-        return preds
+        return proba
