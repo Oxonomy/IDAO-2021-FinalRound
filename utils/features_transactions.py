@@ -108,7 +108,6 @@ def pipeline(df, mcc):
 
 def preprocess_trxn(df, mcc):
     df['tsp_name'] = df['tsp_name'].fillna('unknown')
-    df['txn_city'] = df['txn_city'].fillna('unknown')
     # не бейте плиз
     df['txn_city'] = df['txn_city'].apply(lambda s: s[2:] if s.startswith('G ') else s)
     df['txn_city'] = df['txn_city'].apply(lambda s: s[3:] if s.startswith('G. ') else s)
