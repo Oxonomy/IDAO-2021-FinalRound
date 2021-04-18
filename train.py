@@ -12,7 +12,7 @@ def main():
     x = df[df['sale_amount'].fillna(0) > 0].drop(columns=['client_id', 'sale_flg', 'sale_amount', 'contacts']).to_numpy()
     y = df[df['sale_amount'].fillna(0) > 0]['sale_amount'].to_numpy().reshape(-1, 1)
 
-    model_sale_amount = Model('model_sale_amount', k_fold_n_splits=5)
+    model_sale_amount = Model('model_sale_amount', k_fold_n_splits=25)
     model_sale_amount.fit(x, y)
     model_sale_amount.save()
     print(mean_squared_error(y, model_sale_amount.predict(x)))
@@ -20,7 +20,7 @@ def main():
     x = df.drop(columns=['client_id', 'sale_flg', 'sale_amount', 'contacts']).to_numpy()
     y = df['sale_flg'].to_numpy().reshape(-1, 1)
 
-    model_sale_flg = Model('model_sale_flg', k_fold_n_splits=5)
+    model_sale_flg = Model('model_sale_flg', k_fold_n_splits=25)
     model_sale_flg.fit(x, y)
     model_sale_flg.save()
     print(mean_squared_error(y, model_sale_flg.predict(x)))
