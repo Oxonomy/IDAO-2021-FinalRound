@@ -1,7 +1,6 @@
 import gc
 
 import pandas as pd
-from utils.du import sleep
 import config as c
 from utils.features import *
 from utils.load_data import *
@@ -25,7 +24,6 @@ def get_dataset(is_return_all_table=False, do_features=True) -> pd.DataFrame:
     del df_trxn
     gc.collect()
     # Загрузка и предобработка таблиц
-    #sleep(100)
 
     df_appl = load_appl()
     df_aum = load_aum()

@@ -213,11 +213,6 @@ def get_trxn_features(df_funnel, df_trxn):
     mean_hour_trxn = df_trxn[['client_id', 'hour']].groupby('client_id').mean()
     df_funnel = pd.concat([df_funnel.set_index('client_id'), mean_hour_trxn], axis=1).reset_index()
 
-    # Среднее арифметическое покупок за день
-    df_trxn['date'] = df_trxn.tran_time.dt.date
-    average_purchases_per_day = df_trxn[['client_id', 'date']].groupby('client_id').count() / df_trxn[['client_id', 'date']].groupby('client_id').nunique()
-    df_funnel = pd.concat([df_funnel.set_index('client_id'), average_purchases_per_day], axis=1).reset_index()
-
     # За сколлько дней до конца общего периода была последняя трата
     last_transaction = df_trxn.groupby('client_id')[['tran_time']].max()
     last_transaction = last_transaction.rename(columns={'tran_time': 'last_transaction'})
