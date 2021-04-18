@@ -144,7 +144,7 @@ def get_client_features(funel, client) -> pd.DataFrame:
 
 
 def get_comm_features(df_funnel, df_com) -> pd.DataFrame:
-    coms = df_com[df_com['channel'] == 'CALL'].groupby('client_id').sum()[['agr_flg', 'otkaz', 'dumaet', 'ring_up_flg', 'not_ring_up_flg', 'count_comm']]
+    coms = df_com[df_com['channel'] == 'CALL'].groupby('client_id').sum()[['agr_flg', 'otkaz', 'dumaet', 'ring_up_flg', 'not_ring_up_flg']]
     df_funnel = pd.concat([df_funnel.set_index('client_id'), coms], axis=1).reset_index()
 
     # Количество звонков в последнем месяце
@@ -160,7 +160,20 @@ def get_comm_features(df_funnel, df_com) -> pd.DataFrame:
     df_funnel['last_coll_days_delta'] = df_funnel.last_coll.map(lambda x: (datetime.datetime.combine(datetime.date(2020, 1, 1), datetime.time(0, 0)) - x).days)
     df_funnel = df_funnel.drop(columns=['last_coll'])
 
-    return df_funnel
+    df_funnel = df_funnel.set_index('client_id')
+    products = ['Cash Loan', 'Credit Card', 'Debit Card', 'Investment bundle',
+                'Mortgage', 'Currency exchange', 'Not applicable', 'Investment product']
+    for product in products:
+        gb = df_com[df_com['prod'] == product].groupby('client_id')
+        feature_agr = (gb['agr_flg'].sum() > 0).astype(int).rename(f'agr_prod_{product}')
+        feature_otkaz = (gb['otkaz'].sum() > 0).astype(int).rename(f'otkaz_prod_{product}')
+
+        df_funnel[f'agr_prod_{product}'] = 0
+        df_funnel[f'otkaz_prod_{product}'] = 0
+        df_funnel.loc[feature_agr.index, f'agr_prod_{product}'] = feature_agr
+        df_funnel.loc[feature_otkaz.index, f'otkaz_prod_{product}'] = feature_otkaz
+
+    return df_funnel.reset_index()
 
 
 def get_pensioner(df_funnel, df_payments):
