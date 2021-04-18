@@ -65,7 +65,6 @@ def get_comm_features(df_funnel, df_com) -> pd.DataFrame:
     ring_up_flg_sum = ring_up_flg_sum.rename(columns={'ring_up_flg': 'ring_up_flg_sum'})
     df_funnel = pd.concat([df_funnel.set_index('client_id'), ring_up_flg_sum], axis=1).reset_index()
 
-
     return df_funnel
 
 
@@ -88,4 +87,21 @@ def get_transactions_features(df_funnel, df_trxn, df_dict_mcc):
     return df_funnel
 
 
+def get_deals_features(df_funnel, df_deals):
+    salary_cards_agrmnt_sum_rur_mean = df_deals[df_deals.prod_type_name == 'Salary cards'].groupby('client_id').mean()[['agrmnt_sum_rur']]
+    salary_cards_agrmnt_sum_rur_mean = salary_cards_agrmnt_sum_rur_mean.rename(columns={'agrmnt_sum_rur': 'salary_cards_agrmnt_sum_rur_mean'})
+    df_funnel = pd.concat([df_funnel.set_index('client_id'), salary_cards_agrmnt_sum_rur_mean], axis=1).reset_index()
 
+    salary_cards_agrmnt_sum_rur_sum = df_deals[df_deals.prod_type_name == 'Salary cards'].groupby('client_id').sum()[['agrmnt_sum_rur']]
+    salary_cards_agrmnt_sum_rur_sum = salary_cards_agrmnt_sum_rur_sum.rename(columns={'agrmnt_sum_rur': 'salary_cards_agrmnt_sum_rur_sum'})
+    df_funnel = pd.concat([df_funnel.set_index('client_id'), salary_cards_agrmnt_sum_rur_sum], axis=1).reset_index()
+
+    credit_cards_agrmnt_rate_active = df_deals[df_deals.prod_type_name == 'Credit cards'].groupby('client_id').mean()[['agrmnt_rate_active']]
+    credit_cards_agrmnt_rate_active = credit_cards_agrmnt_rate_active.rename(columns={'agrmnt_rate_active': 'credit_cards_agrmnt_rate_active'})
+    df_funnel = pd.concat([df_funnel.set_index('client_id'), credit_cards_agrmnt_rate_active], axis=1).reset_index()
+
+    credit_cards_agrmnt_sum_rur = df_deals[df_deals.prod_type_name == 'Credit cards'].groupby('client_id').mean()[['agrmnt_sum_rur']]
+    credit_cards_agrmnt_sum_rur = credit_cards_agrmnt_sum_rur.rename(columns={'agrmnt_sum_rur': 'credit_cards_agrmnt_sum_rur'})
+    df_funnel = pd.concat([df_funnel.set_index('client_id'), credit_cards_agrmnt_sum_rur], axis=1).reset_index()
+
+    return df_funnel
