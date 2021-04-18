@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    command: make run
+    volumes:
+      - ./:/app
+      - /home/narek/kaggle/idao/idao_2021_train:/app/data
+      - ./generated_submissions:/submissions
+    working_dir: /app
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 2G

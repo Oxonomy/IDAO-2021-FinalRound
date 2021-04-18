@@ -11,7 +11,10 @@ import config as c
 
 
 def get_combine_predictions(x, model_sale_flg, model_sale_amount, model_calls_amount):
-    target = model_sale_flg.predict(x) * model_sale_amount.predict(x)
+    sales_amount = model_sale_amount.predict(x)
+    x = np.concatenate((x, sales_amount.reshape(-1, 1)), axis=1)
+
+    target = model_sale_flg.predict(x) * sales_amount
     target = target > c.CALL_COST * model_calls_amount.predict(x)
     return target.astype('int')
 

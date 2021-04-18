@@ -24,6 +24,8 @@ def main():
     print(mean_squared_error(y, model_calls_amount.predict(x)))
 
     x = df.drop(columns=['client_id', 'sale_flg', 'sale_amount', 'contacts']).to_numpy()
+    sales_amount = model_sale_amount.predict(x)
+    x = np.concatenate((x, sales_amount.reshape(-1, 1)), axis=1)
     y = df['sale_flg'].to_numpy().reshape(-1, 1)
 
     model_sale_flg = Model('model_sale_flg', k_fold_n_splits=25)

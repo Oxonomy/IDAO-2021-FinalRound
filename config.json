@@ -1,4 +1,4 @@
 {
-    "dataset_dir": "C:\\Users\\Kirill\\Documents\\DataSets\\idao_2021_train",
+    "dataset_dir": "/app/data",
     "model_dir": "model"
 }
