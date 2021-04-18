@@ -59,50 +59,6 @@ def pipeline(df, mcc):
     feature_user_activity(client_info, df)
     client_info['activity_window'] = client_info['last_active_month'] - client_info['first_active_month']
 
-    # TIME SERIES features of monthly actions. VERY SLOW!
-    #feature_action_seq_by_label(client_info, df, 'mcc_cd')
-
-    # TIME SERIES features of spends
-    mcc_labels_mean = ('General consumption_Food', 'Restaurants_Fast food',
-                       'Restaurants_Restaurants', 'Clothes_Clothes', 'Health_Drugs')
-    for mcc_label in mcc_labels_mean:
-        feature_mean_mounthly_check_for_mcc(client_info, df, mcc_label, mean=True)
-
-    mcc_labels_sum = ('General consumption_Food', 'Cash_Cash', 'Restaurants_Fast food', 'Finance_Money transfer',
-                      'Electronics_Electronics', 'Cars_Car services', 'Health_Drugs',
-                      'General consumption_Department stores',
-                      'Clothes_Clothes', 'General consumption_Other goods', 'Restaurants_Restaurants', 'Transport_Bus',
-                      'Transport_Taxi', 'Housing_Furniture and equipment', 'Housing_Repair',
-                      'Finance_Financial services',
-                      'Beauty_Cosmetics', 'Transport_Local transport', 'Health_Medical services', 'Luxury_Cigars',
-                      'Restaurants_Bars', 'Beauty_Barber and beauty', 'Travel_Airlines', 'Travel_Hotels',
-                      'Education_Education')
-    for mcc_label in mcc_labels_sum:
-        feature_mean_mounthly_check_for_mcc(client_info, df, mcc_label, mean=False)
-
-    client_info['mean_mcc_sum_trend'] = 0
-    for mcc_label in mcc_labels_sum:
-        client_info['mean_mcc_sum_trend'] += client_info[f'trend_monthly_sum_{mcc_label}'] / len(mcc_labels_sum)
-
-    client_info.drop('min_monthly_sum_Travel_Hotels', axis=1, inplace=True)
-
-    # TIME SERIES features for different money transfers
-    feature_client_money_transfer(
-        client_info, df,
-        tr_types=['Payment for goods and services', 'Cashless transfer', 'Payment by card (bank transfer)'],
-        tr_label='outcome'
-    )
-    feature_client_money_transfer(
-        client_info, df,
-        tr_types=['Return of goods / services', 'Cash deposit by card'],
-        tr_label='income'
-    )
-    feature_client_money_transfer(
-        client_info, df,
-        tr_types=['Cash withdrawal through an ATM', 'Cash withdrawal'],
-        tr_label='cash'
-    )
-
     return client_info
 
 
