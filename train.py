@@ -1,8 +1,8 @@
-from sklearn.metrics import mean_squared_error
 import logging
 import config as c
 from utils.dataset import *
 from utils.metrics import NIC
+from sklearn.metrics import mean_squared_error
 from utils.model import Model, get_combine_predictions
 
 

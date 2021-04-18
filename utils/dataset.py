@@ -9,7 +9,7 @@ from utils.data_processing import *
 
 
 
-def get_dataset() -> pd.DataFrame:
+def get_dataset(is_return_all_table=False) -> pd.DataFrame:
     """
     Загружает все таблицы и генерирует из них фичи
     :return: итоговая таблица
@@ -32,7 +32,10 @@ def get_dataset() -> pd.DataFrame:
     df_funnel = get_funnel_features(df_funnel)
     df_funnel = get_client_features(df_funnel, df_client)
 
-    return df_funnel
+    if not is_return_all_table:
+        return df_funnel
+    else:
+        return df_funnel, df_appl, df_aum, df_balance, df_client, df_com, df_deals, df_payments
 
 
 

@@ -50,10 +50,21 @@ def get_funnel_features(funel) -> pd.DataFrame:
 
 def get_client_features(funel, client) -> pd.DataFrame:
     client['gender'] = client['gender'].fillna('M').map(lambda x: int(hashlib.sha1(x.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
-    print(client['gender'])
     client['age'] = client['age'].fillna(client['age'].median()).astype(int)
     client['citizenship'] = client['citizenship'].fillna('RUSSIA').map(lambda x: int(hashlib.sha1(x.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
     client['education'] = client['education'].fillna('HIGHER_PROFESSIONAL').map(lambda x: int(hashlib.sha1(x.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
     client['job_type'] = client['job_type'].fillna("USELESS_JOB").map(lambda x: int(hashlib.sha1(x.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
     funel = funel.merge(client, on='client_id', how='left')
     return funel
+
+
+def get_pensioner(df_funnel, df_payments):
+    df_payments = df_payments.copy()[['client_id', 'pmnts_name']]
+    df_payments.pmnts_name = (df_payments.pmnts_name == 'Pension receipts').astype(int)
+    df_payments = df_payments.rename(columns={'pmnts_name': 'is_pensioner'})
+    df_payments = df_payments.groupby('client_id').max()
+    df_payments.fillna(0)
+
+    df_funnel = pd.concat([df_funnel.set_index('client_id'), df_payments], axis=1).reset_index()
+    return df_funnel
+
