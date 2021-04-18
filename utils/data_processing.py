@@ -70,14 +70,14 @@ def trxn_preprocessing(df: pd.DataFrame):
     df.txn_country = df.txn_country.astype("category")
     df.txn_comment_1 = df.txn_comment_1.astype("category")
 
-    df.tran_amt_rur = df.tran_amt_rur.astype('float16')
+    #df.tran_amt_rur = df.tran_amt_rur.astype('float16')
 
     df = sort_data_by_datetime(df, 'tran_time')
     return df
 
 
 def string_columns_to_int(df: pd.DataFrame):
-    categorical_columns = [c for c in df.columns if df[c].dtype.name == 'object']
+    categorical_columns = [c for c in df.columns if (df[c].dtype.name == 'object') or (df[c].dtype.name == 'object')]
     print(categorical_columns)
     for column in categorical_columns:
         df[column] = df[column].map(lambda x: int(hashlib.sha1(str(x).encode("utf-8")).hexdigest(), 16) % (10 ** 8))

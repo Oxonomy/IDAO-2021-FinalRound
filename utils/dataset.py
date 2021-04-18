@@ -34,7 +34,6 @@ def get_dataset(is_return_all_table=False, do_features=True) -> pd.DataFrame:
     df_com = load_com()
     df_deals = load_deals()
     df_payments = load_payments()
-    # df_trxn = load_trxn()
 
     # Генерация фич
     if do_features:
