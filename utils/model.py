@@ -29,26 +29,15 @@ class Model:
 
     @staticmethod
     def get_catboost_model():
-        model = CatBoostRegressor(iterations=100,
-                                  learning_rate=3e-2,
-                                  l2_leaf_reg=3.0,  # any pos value
-                                  depth=5,  # int up to 16
-                                  min_data_in_leaf=1,  # 1,2,3,4,5
-                                  rsm=1,  # 0.01 .. 1.0
-                                  langevin=False,
-                                  task_type="GPU",
-                                  devices='0:1')
+        model = CatBoostRegressor(iterations=400,
+                                  depth=5, )
         return model
 
-    def fit(self, X, y) -> float:
-        score = 0
+    def fit(self, X, y):
         for i in range(self.k_fold_n_splits):
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=i)
             self.catboost_regressor_models[i].fit(X_train, y_train, eval_set=(X_test, y_test), verbose=0)
-            score += self.catboost_regressor_models[i].score(X_test, y_test)
-        score = score / self.k_fold_n_splits
-        print('Models score:', score)
-        return score
+        return 0
 
     def predict(self, X):
         predict = []
@@ -75,6 +64,7 @@ class ModelClassifier(Model):
             depth=5,
         )
         return model
+
 
     def fit(self, X, y):
         for i in range(self.k_fold_n_splits):

@@ -196,22 +196,15 @@ def get_transactions_features(df_funnel, df_trxn, df_dict_mcc):
 
 
 def get_trxn_features(df_funnel, df_trxn):
-    df_trxn['very_small_purchase'] = (df_trxn.tran_amt_rur < 150).astype('int16')
-    df_trxn['small_purchase'] = (df_trxn.tran_amt_rur < 1500).astype('int16')
     df_trxn['average_purchase'] = ((df_trxn.tran_amt_rur > 1500) & (df_trxn.tran_amt_rur < 10000)).astype('int16')
     df_trxn['big_purchase'] = (df_trxn.tran_amt_rur > 10000).astype('int16')
-    purchase = df_trxn.groupby('client_id').sum()[['very_small_purchase', 'small_purchase', 'average_purchase', 'big_purchase']]
+    purchase = df_trxn.groupby('client_id').sum()[['average_purchase', 'big_purchase']]
     df_funnel = pd.concat([df_funnel.set_index('client_id'), purchase], axis=1).reset_index()
 
     # Повторяющаяся покупки
     recurring_purchases = (df_trxn.groupby('client_id').count() - df_trxn.groupby('client_id').nunique())[['tran_amt_rur', 'tsp_name']]
     recurring_purchases = recurring_purchases.rename(columns={'tran_amt_rur': 'nonunique_tran_amt_rur', 'tsp_name': 'nonunique_tsp_name'})
     df_funnel = pd.concat([df_funnel.set_index('client_id'), recurring_purchases], axis=1).reset_index()
-
-    # Среднее арифметическое время платежа
-    df_trxn['hour'] = df_trxn.tran_time.dt.hour
-    mean_hour_trxn = df_trxn[['client_id', 'hour']].groupby('client_id').mean()
-    df_funnel = pd.concat([df_funnel.set_index('client_id'), mean_hour_trxn], axis=1).reset_index()
 
     # За сколлько дней до конца общего периода была последняя трата
     last_transaction = df_trxn.groupby('client_id')[['tran_time']].max()

@@ -18,7 +18,7 @@ def get_dataset(is_return_all_table=False, do_features=True) -> pd.DataFrame:
     df_dict_mcc = load_dict_mcc()
     if do_features:
         df_funnel = get_transactions_features(df_funnel, df_trxn, df_dict_mcc)
-        df_funnel = get_trxn_features(df_funnel, df_trxn)
+        #df_funnel = get_trxn_features(df_funnel, df_trxn)
 
     del df_dict_mcc
     del df_trxn
